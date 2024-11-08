@@ -6,7 +6,7 @@ public class CharacterController : MonoBehaviour
 {
     private QuickFPS _pInput;
     private float _originalMoveSpeed = 5f; 
-    private float _runMoveSpeed = 10f; // Vitesse de déplacement du joueur
+    private float _runMoveSpeed = 10f;
     public bool _isGrounded;
     private Vector3 _originalScale;
 

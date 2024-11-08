@@ -8375,7 +8375,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 665226757821479388, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.87
+      value: 5.44
       objectReference: {fileID: 0}
     - target: {fileID: 665226757821479388, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8383,7 +8383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 665226757821479388, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 9.46
+      value: 8.4
       objectReference: {fileID: 0}
     - target: {fileID: 665226757821479388, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8412,6 +8412,10 @@ PrefabInstance:
     - target: {fileID: 665226757821479388, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 761749565964348157, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
+      propertyPath: m_AgentTypeID
+      value: -1372625422
       objectReference: {fileID: 0}
     - target: {fileID: 7350212880300037666, guid: fd7383be8d17a844b86b589226cf5825, type: 3}
       propertyPath: m_Name
@@ -9298,9 +9302,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 207227043050912279, guid: eb274e494f44c0b478b942183dc02d4d, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3429290700276882961, guid: eb274e494f44c0b478b942183dc02d4d, type: 3}
       propertyPath: m_Name
       value: SceneLoadout
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429290700276882961, guid: eb274e494f44c0b478b942183dc02d4d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7086832720040989088, guid: eb274e494f44c0b478b942183dc02d4d, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9017547601619820518, guid: eb274e494f44c0b478b942183dc02d4d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9871,13 +9887,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SerializedVersion: 0
-  m_AgentTypeID: 0
+  m_AgentTypeID: -1372625422
   m_CollectObjects: 0
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -9886,8 +9902,8 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
+  m_VoxelSize: 0.33333334
+  m_MinRegionArea: 1
   m_NavMeshData: {fileID: 23800000, guid: 58c6faf6c92dca54c90174ffe94adcb8, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1001 &1834488751
