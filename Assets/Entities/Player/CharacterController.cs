@@ -1,14 +1,22 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
+
 
 public class CharacterController : MonoBehaviour
 {
-    private QuickFPS _pInput;
-    private float _originalMoveSpeed = 5f; 
-    private float _runMoveSpeed = 10f; // Vitesse de déplacement du joueur
-    public bool _isGrounded;
-    private Vector3 _originalScale;
+    QuickFPS _pInput;
+    float _originalMoveSpeed = 5f;
+    float _runMoveSpeed = 7f;
+    bool _isGrounded;
+    Vector3 _originalScale;
+
+    public float _health = 100f;
+    public Image _damageImage;
+
+    private bool _isDead = false;
+
 
     Weapon _equipedWeapon;
 
@@ -32,6 +40,7 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed += DropWeapon;
         _pInput.Player.Crouch.performed += Crouch;
         _pInput.Player.Crouch.canceled += Crouch;
+        _pInput.Player.SelfDamage.performed += SelfDamage;
     }
 
     private void OnDisable()
@@ -43,6 +52,7 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed -= DropWeapon;
         _pInput.Player.Crouch.performed -= Crouch;
         _pInput.Player.Crouch.canceled -= Crouch;
+        _pInput.Player.SelfDamage.performed -= SelfDamage;
         _pInput.Disable();
     }
 
@@ -65,6 +75,11 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         MovePlayer(_originalMoveSpeed);
+        if (_isDead)
+        {
+            // Game Over
+        }
+
     }
     private void MovePlayer(float speed)
     {
@@ -77,7 +92,7 @@ public class CharacterController : MonoBehaviour
     }
 
     void Run(InputAction.CallbackContext context)
-    { 
+    {
         if (context.phase == InputActionPhase.Performed)
             _originalMoveSpeed = _runMoveSpeed;
         else if (context.phase == InputActionPhase.Canceled)
@@ -123,8 +138,6 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-
-
     void Crouch(InputAction.CallbackContext context)
     {
         if (_isGrounded)
@@ -141,4 +154,18 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
+    void SelfDamage(InputAction.CallbackContext context)
+    {
+        TakeDamage(10);
+    }
+    public void TakeDamage(float damage)
+    {
+        _health -= damage;
+        if (_health <= 0)
+        { 
+            _isDead = true;
+        }
+    }
+
 }
+

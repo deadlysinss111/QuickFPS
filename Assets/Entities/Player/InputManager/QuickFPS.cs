@@ -99,6 +99,15 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelfDamage"",
+                    ""type"": ""Button"",
+                    ""id"": ""0d6947be-012a-4089-92d6-0436ec989b14"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -374,6 +383,17 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73d967aa-86b2-4708-a490-5983b98ff2cf"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelfDamage"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -969,6 +989,7 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         m_Player_TakeWeapon = m_Player.FindAction("TakeWeapon", throwIfNotFound: true);
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
+        m_Player_SelfDamage = m_Player.FindAction("SelfDamage", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1056,6 +1077,7 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_TakeWeapon;
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Run;
+    private readonly InputAction m_Player_SelfDamage;
     public struct PlayerActions
     {
         private @QuickFPS m_Wrapper;
@@ -1068,6 +1090,7 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         public InputAction @TakeWeapon => m_Wrapper.m_Player_TakeWeapon;
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @Run => m_Wrapper.m_Player_Run;
+        public InputAction @SelfDamage => m_Wrapper.m_Player_SelfDamage;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1101,6 +1124,9 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
+            @SelfDamage.started += instance.OnSelfDamage;
+            @SelfDamage.performed += instance.OnSelfDamage;
+            @SelfDamage.canceled += instance.OnSelfDamage;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1129,6 +1155,9 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
+            @SelfDamage.started -= instance.OnSelfDamage;
+            @SelfDamage.performed -= instance.OnSelfDamage;
+            @SelfDamage.canceled -= instance.OnSelfDamage;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1319,6 +1348,7 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         void OnTakeWeapon(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnSelfDamage(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
