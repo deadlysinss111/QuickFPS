@@ -4,11 +4,8 @@ using UnityEngine.InputSystem;
 public class CharacterController : MonoBehaviour
 {
     private QuickFPS _pInput;
-    public Transform cameraTransform; // Référence à la caméra enfantée au joueur
-    public float mouseSensitivity = 100f; // Sensibilité de la souris
     public float moveSpeed = 5f; // Vitesse de déplacement du joueur
-
-    private float xRotation = 0f; // Pour limiter la rotation verticale
+    public bool _isGrounded;
 
     void Awake()
     {
@@ -25,6 +22,22 @@ public class CharacterController : MonoBehaviour
     {
         _pInput.Player.Jump.performed -= Jump;
         _pInput.Disable();
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = false;
+        }
     }
 
     void Start()
@@ -52,9 +65,9 @@ public class CharacterController : MonoBehaviour
     void Jump(InputAction.CallbackContext context)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null && rb.tag == "isGrounded") // Vérifie que le joueur est au sol
+        if (rb != null && _isGrounded) // Vérifie que le joueur est au sol
         {
-            rb.AddForce(Vector3.up * 100, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
         }
     }
 }
