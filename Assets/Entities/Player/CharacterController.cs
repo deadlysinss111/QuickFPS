@@ -4,12 +4,8 @@ using UnityEngine.InputSystem;
 public class CharacterController : MonoBehaviour
 {
     private QuickFPS _pInput;
-
-    public Transform _cameraTransform;
-    public float _mouseSensitivity = 100f;
-    private float _xRotation = 0f;
-
-    public float _moveSpeed = 5f;
+    public float moveSpeed = 5f;
+    public bool _isGrounded;
 
     void Awake()
     {
@@ -26,6 +22,22 @@ public class CharacterController : MonoBehaviour
     {
         _pInput.Player.Jump.performed -= Jump;
         _pInput.Disable();
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = false;
+        }
     }
 
     void Start()
@@ -51,9 +63,9 @@ public class CharacterController : MonoBehaviour
     void Jump(InputAction.CallbackContext context)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null && rb.tag == "isGrounded")
+        if (rb != null && _isGrounded) // V�rifie que le joueur est au sol
         {
-            rb.AddForce(Vector3.up * 100, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
         }
     }
 }
