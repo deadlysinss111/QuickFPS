@@ -63,6 +63,24 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""6ff5f457-7f8e-4ca0-ac60-4a1fcc887d25"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TakeWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""737bff57-06cc-4c36-9d32-fc3c7fb9071a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -294,6 +312,28 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15964e3e-57ef-4c28-9639-19a091962b6a"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DropWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c6d1f18-85a9-436d-8d0c-ec3a6372b416"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TakeWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -885,6 +925,8 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_DropWeapon = m_Player.FindAction("DropWeapon", throwIfNotFound: true);
+        m_Player_TakeWeapon = m_Player.FindAction("TakeWeapon", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -968,6 +1010,8 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_DropWeapon;
+    private readonly InputAction m_Player_TakeWeapon;
     public struct PlayerActions
     {
         private @QuickFPS m_Wrapper;
@@ -976,6 +1020,8 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @DropWeapon => m_Wrapper.m_Player_DropWeapon;
+        public InputAction @TakeWeapon => m_Wrapper.m_Player_TakeWeapon;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -997,6 +1043,12 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @DropWeapon.started += instance.OnDropWeapon;
+            @DropWeapon.performed += instance.OnDropWeapon;
+            @DropWeapon.canceled += instance.OnDropWeapon;
+            @TakeWeapon.started += instance.OnTakeWeapon;
+            @TakeWeapon.performed += instance.OnTakeWeapon;
+            @TakeWeapon.canceled += instance.OnTakeWeapon;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1013,6 +1065,12 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @DropWeapon.started -= instance.OnDropWeapon;
+            @DropWeapon.performed -= instance.OnDropWeapon;
+            @DropWeapon.canceled -= instance.OnDropWeapon;
+            @TakeWeapon.started -= instance.OnTakeWeapon;
+            @TakeWeapon.performed -= instance.OnTakeWeapon;
+            @TakeWeapon.canceled -= instance.OnTakeWeapon;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1199,6 +1257,8 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnDropWeapon(InputAction.CallbackContext context);
+        void OnTakeWeapon(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

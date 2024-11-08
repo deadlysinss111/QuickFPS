@@ -4,11 +4,12 @@ using UnityEngine.InputSystem;
 public class CharacterController : MonoBehaviour
 {
     private QuickFPS _pInput;
-    public Transform cameraTransform; // Référence à la caméra enfantée au joueur
-    public float mouseSensitivity = 100f; // Sensibilité de la souris
-    public float moveSpeed = 5f; // Vitesse de déplacement du joueur
 
-    private float xRotation = 0f; // Pour limiter la rotation verticale
+    public Transform _cameraTransform;
+    public float _mouseSensitivity = 100f;
+    private float _xRotation = 0f;
+
+    public float _moveSpeed = 5f;
 
     void Awake()
     {
@@ -29,7 +30,6 @@ public class CharacterController : MonoBehaviour
 
     void Start()
     {
-        // Verrouiller le curseur pour un contrôle FPS
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -37,22 +37,21 @@ public class CharacterController : MonoBehaviour
     {
         MovePlayer();
     }
+
     private void MovePlayer()
     {
         Vector2 movementInput = _pInput.Player.Move.ReadValue<Vector2>();
 
-        // Calculer le déplacement en fonction de la direction du joueur
         Vector3 moveDirection = transform.right * movementInput.x + transform.forward * movementInput.y;
-        moveDirection.y = 0; // Empêche le joueur de se déplacer verticalement
+        moveDirection.y = 0;
 
-        // Appliquer le mouvement avec la vitesse définie
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+        transform.Translate(moveDirection * _moveSpeed * Time.deltaTime, Space.World);
     }
 
     void Jump(InputAction.CallbackContext context)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null && rb.tag == "isGrounded") // Vérifie que le joueur est au sol
+        if (rb != null && rb.tag == "isGrounded")
         {
             rb.AddForce(Vector3.up * 100, ForceMode.Impulse);
         }
