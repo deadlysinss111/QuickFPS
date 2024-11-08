@@ -9,7 +9,6 @@ public class FollowPlayer : MonoBehaviour
     private NavMeshAgent agent;
     private GameObject player;
     public float stopDistance = 2f;
-    // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
