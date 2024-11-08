@@ -13,7 +13,6 @@ public class Weapon : MonoBehaviour
     private void Awake()
     {
         _pInput = new();
-        TakeInHand();
     }
 
     public void TakeInHand()
@@ -35,7 +34,7 @@ public class Weapon : MonoBehaviour
 
     virtual protected void Fire() 
     {
-        GameObject bullet = Instantiate(_bulletPrefab, transform.position, transform.rotation);
+        GameObject bullet = Instantiate(_bulletPrefab, transform.position + transform.rotation * new Vector3(2, 0, 0), transform.rotation);
         //Bullet bulletScript = bullet.GetComponent<Bullet>();
     }
 }

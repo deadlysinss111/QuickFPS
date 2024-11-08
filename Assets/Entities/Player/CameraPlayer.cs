@@ -19,7 +19,9 @@ public class CameraPlayer : MonoBehaviour
             var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
             var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
-            transform.localRotation = xQuat * yQuat;
+            Transform player = transform.parent.transform;
+            player.localRotation = xQuat;
+            transform.localRotation = yQuat;
         }
     }
 }
