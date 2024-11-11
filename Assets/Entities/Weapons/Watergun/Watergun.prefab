@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4058760885657214992}
   - component: {fileID: 3068601348737805382}
   - component: {fileID: 7951851840339856543}
+  - component: {fileID: -8579273696321643928}
   m_Layer: 0
   m_Name: Watergun
   m_TagString: Untagged
@@ -101,6 +102,27 @@ MonoBehaviour:
   _type: 1
   _bulletPrefab: {fileID: 4951942607226481587, guid: fca499599d48670439b70b9cb3955c89, type: 3}
   _shootCooldown: 0.4
+--- !u!114 &-8579273696321643928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526869499326681781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &9196529533647487273
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,9 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
 
 
-public class CharacterController : MonoBehaviour
+public class CharacterController : NetworkBehaviour
 {
     QuickFPS _pInput;
     float _originalMoveSpeed = 5f;
@@ -23,6 +24,7 @@ public class CharacterController : MonoBehaviour
     Weapon _equipedWeapon;
 
     [SerializeField] LayerMask _layerMask;
+    [SerializeField] Camera _camera;
 
     void Awake()
     {
@@ -34,6 +36,13 @@ public class CharacterController : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("local : " + IsLocalPlayer);
+        Debug.Log("owner : " + IsOwner);
+        Debug.Log("id : " + OwnerClientId);
+        if (!IsOwner)
+        {
+            //_camera.gameObject.SetActive(false);
+        }
         _pInput.Enable();
         _pInput.Player.Run.performed += Run;
         _pInput.Player.Run.canceled += Run;
@@ -76,8 +85,9 @@ public class CharacterController : MonoBehaviour
 
     void Update()
     {
-        if (!_isDead)
+        if (!_isDead && IsOwner)
         {
+            print("move");
             MovePlayer(_originalMoveSpeed);
         }
     }
@@ -188,6 +198,11 @@ public class CharacterController : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public Transform GetCamera()
+    {
+        return _camera.transform;
     }
 
 }
