@@ -2,6 +2,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 
 public class CharacterController : MonoBehaviour
@@ -16,6 +17,7 @@ public class CharacterController : MonoBehaviour
     public Image _damageImage;
 
     private bool _isDead = false;
+    [SerializeField] private GameObject gameOverUI;
 
 
     Weapon _equipedWeapon;
@@ -74,12 +76,10 @@ public class CharacterController : MonoBehaviour
 
     void Update()
     {
-        MovePlayer(_originalMoveSpeed);
-        if (_isDead)
+        if (!_isDead)
         {
-            // Game Over
+            MovePlayer(_originalMoveSpeed);
         }
-
     }
     private void MovePlayer(float speed)
     {
@@ -164,7 +164,28 @@ public class CharacterController : MonoBehaviour
         if (_health <= 0)
         { 
             _isDead = true;
+            ShowGameOverScreen();
         }
+    }
+
+    private void ShowGameOverScreen()
+    {
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+        }
+        Time.timeScale = 0f;
+    }
+
+    public void Retry()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 
 }
