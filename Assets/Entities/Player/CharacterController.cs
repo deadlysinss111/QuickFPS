@@ -42,7 +42,7 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed += DropWeapon;
         _pInput.Player.Crouch.performed += Crouch;
         _pInput.Player.Crouch.canceled += Crouch;
-        _pInput.Player.SelfDamage.performed += SelfDamage;
+        //_pInput.Player.SelfDamage.performed += SelfDamage;
     }
 
     private void OnDisable()
@@ -54,7 +54,7 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed -= DropWeapon;
         _pInput.Player.Crouch.performed -= Crouch;
         _pInput.Player.Crouch.canceled -= Crouch;
-        _pInput.Player.SelfDamage.performed -= SelfDamage;
+        //_pInput.Player.SelfDamage.performed -= SelfDamage;
         _pInput.Disable();
     }
 
