@@ -6,35 +6,47 @@ using UnityEngine.AI;
 
 public class FollowPlayer : MonoBehaviour
 {
-    private NavMeshAgent agent;
-    private GameObject player;
-    public float stopDistance = 2f;
-    // Start is called before the first frame update
+    private NavMeshAgent _agent;
+    private GameObject _player;
+    [SerializeField] float _stopDistance = 8f;
+    [SerializeField] float _shootDistance = 10f;
+    [SerializeField] float _cooldown = 2f;
+    float _remaingingCooldown;
+
+    [SerializeField]EnemyClassicWeapon _weapon;
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindWithTag("Player");
+        _agent = GetComponent<NavMeshAgent>();
+        _player = GameObject.Find("Player");
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Follow();
+        _remaingingCooldown -= Time.deltaTime;
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
+        Follow(distanceToPlayer);
+        Shoot(distanceToPlayer);
     }
-    public void Follow()
+    void Follow(float distanceToPlayer)
     {
-        // Calculer la distance entre l'ennemi et le joueur
-        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        
 
-        // Si la distance est supérieure à `stopDistance`, poursuivre le joueur
-        if (distanceToPlayer > stopDistance)
+        if (distanceToPlayer > _stopDistance)
         {
-            agent.SetDestination(player.transform.position);
+            _agent.SetDestination(_player.transform.position);
         }
         else
         {
-            // Arrêter de suivre le joueur si la distance est inférieure ou égale à `stopDistance`
-            agent.ResetPath(); // Annule la destination actuelle pour arrêter l'agent
+            _agent.ResetPath();
+        }
+    }
+
+    void Shoot(float distanceToPlayer)
+    {
+        if(distanceToPlayer < _shootDistance && _remaingingCooldown <= 0)
+        {
+            _weapon.Fire();
+            _remaingingCooldown = _cooldown;
         }
     }
 }

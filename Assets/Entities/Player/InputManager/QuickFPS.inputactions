@@ -27,7 +27,7 @@
                     "name": "Fire",
                     "type": "Button",
                     "id": "c8788378-6d91-45af-89ef-a9d12ea780f8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -78,9 +78,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SelfDamage",
+                    "name": "Reload",
                     "type": "Button",
-                    "id": "0d6947be-012a-4089-92d6-0436ec989b14",
+                    "id": "429baa40-592a-4068-a5fe-758ca80f522e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -365,12 +365,12 @@
                 },
                 {
                     "name": "",
-                    "id": "73d967aa-86b2-4708-a490-5983b98ff2cf",
-                    "path": "<Keyboard>/b",
+                    "id": "3a644861-42fc-453a-828e-87053d6eabfc",
+                    "path": "<Keyboard>/#(R)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SelfDamage",
+                    "action": "Reload",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

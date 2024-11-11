@@ -121,9 +121,12 @@ public class CharacterController : MonoBehaviour
         Weapon _weaponScript;
         if (hit.transform.gameObject.TryGetComponent(out _weaponScript))
         {
-            print("sg");
+            if(_equipedWeapon != null)
+            {
+                _equipedWeapon.Drop();
+            }
             _weaponScript.TakeInHand();
-            hit.transform.position = transform.position + new Vector3(1, 0, 0);
+            _weaponScript._handSpot = GameObject.Find("HandSpot").transform;
             hit.transform.SetParent(transform);
             _equipedWeapon = _weaponScript;
         }
@@ -134,7 +137,6 @@ public class CharacterController : MonoBehaviour
         if (_equipedWeapon != null)
         {
             _equipedWeapon.Drop();
-            _equipedWeapon.transform.SetParent(null);
         }
     }
 
