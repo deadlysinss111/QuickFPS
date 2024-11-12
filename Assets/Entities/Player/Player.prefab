@@ -368,6 +368,7 @@ GameObject:
   - component: {fileID: 1314460270721372395}
   - component: {fileID: 5551374811147041530}
   - component: {fileID: 904566729574695575}
+  - component: {fileID: 6779293834854208458}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -448,7 +449,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1047709939837252885}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!114 &5551374811147041530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,6 +509,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 20
   yRotationLimit: 88
+--- !u!114 &6779293834854208458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047709939837252885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 358b0fcc3f00b1447958d63a434aba37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: Main Theme
+    clip: {fileID: 8300000, guid: a8ba63f90d44cdc4f9f3635163b34b48, type: 3}
+    output: {fileID: 956545927443677115, guid: c97e032d1a8da854fb65e4f4b90a4377, type: 2}
+    playOnStart: 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
 --- !u!1 &1196809625880256911
 GameObject:
   m_ObjectHideFlags: 0

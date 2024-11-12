@@ -61,6 +61,8 @@ public class CharacterController : NetworkBehaviour
         _pInput.Player.DropWeapon.performed += DropWeapon;
         _pInput.Player.Crouch.performed += Crouch;
         _pInput.Player.Crouch.canceled += Crouch;
+
+        transform.Find("Main Camera").GetComponent<AudioManager>().Init();
     }
 
     private void OnDisable()
