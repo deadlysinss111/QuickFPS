@@ -37,8 +37,6 @@ public class CharacterController : NetworkBehaviour
 
     void Awake()
     {
-
-        gameOverUI.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         _pInput = new QuickFPS();
         _equipedWeapon = null;
@@ -47,6 +45,7 @@ public class CharacterController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        gameOverUI.SetActive(false);
         if (!IsOwner)
         {
             _camera.gameObject.SetActive(false);
@@ -219,7 +218,7 @@ public class CharacterController : NetworkBehaviour
     public void Quit()
     {
         Application.Quit(); // For builded version
-        UnityEditor.EditorApplication.isPlaying = false; // for edited version
+        //UnityEditor.EditorApplication.isPlaying = false; // for edited version
     }
 
     private void UpdateShader()
@@ -235,8 +234,5 @@ public class CharacterController : NetworkBehaviour
     {
         return _camera.transform;
     }
-
-}
-
 
 }
