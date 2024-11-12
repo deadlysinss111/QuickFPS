@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : NetworkBehaviour
 {
     [SerializeField] protected float _speed = 0.1f;
     [SerializeField] protected float _lifeTime = 10;
@@ -35,7 +36,7 @@ public class Bullet : MonoBehaviour
         _lifeTime -= Time.deltaTime;
         if(_lifeTime <= 0)
         {
-            Destroy(gameObject);
+            DestroySelfRpc();
         }
     }
 
@@ -55,6 +56,12 @@ public class Bullet : MonoBehaviour
             Hit(player);
         }
         
+        DestroySelfRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DestroySelfRpc()
+    {
         Destroy(gameObject);
     }
 }

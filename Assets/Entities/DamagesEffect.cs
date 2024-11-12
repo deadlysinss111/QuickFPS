@@ -1,9 +1,10 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class DamageEffect : MonoBehaviour
+public class DamageEffect : NetworkBehaviour
 {
     [SerializeField] Image _damageImage;
     [SerializeField] AudioClip _damageSound;

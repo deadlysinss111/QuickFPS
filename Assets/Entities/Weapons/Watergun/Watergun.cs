@@ -16,9 +16,9 @@ public class Watergun : Weapon
         _remainingCooldown = _shootCooldown;
     }
 
-    public override void TakeInHand()
+    public override void TakeInHand(Transform handSpot, Transform camera, Transform playerransform, int ownerId)
     {
-        base.TakeInHand();
+        base.TakeInHand(handSpot, camera, playerransform, ownerId);
         _pInput.Player.Fire.canceled += TriggerFireTravel;
     }
 

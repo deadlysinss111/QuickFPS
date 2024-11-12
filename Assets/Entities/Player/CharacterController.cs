@@ -4,9 +4,11 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using static UnityEngine.Rendering.DebugUI;
+using Unity.Netcode;
+using System;
 
 
-public class CharacterController : MonoBehaviour
+public class CharacterController : NetworkBehaviour
 {
     QuickFPS _pInput;
     float _originalMoveSpeed = 5f;
@@ -28,6 +30,10 @@ public class CharacterController : MonoBehaviour
     Weapon _equipedWeapon;
 
     [SerializeField] LayerMask _layerMask;
+    [SerializeField] Camera _camera;
+    [SerializeField] Transform _handSpot;
+
+    [NonSerialized] public int _playerId = -1;
 
     void Awake()
     {
@@ -39,8 +45,15 @@ public class CharacterController : MonoBehaviour
         _originalScale = transform.localScale;
     }
 
-    private void OnEnable()
+    public override void OnNetworkSpawn()
     {
+        if (!IsOwner)
+        {
+            _camera.gameObject.SetActive(false);
+            transform.Find("CanvasCamera").gameObject.SetActive(false);
+            transform.Find("Canvas").gameObject.SetActive(false);
+            return;
+        }
         _pInput.Enable();
         _pInput.Player.Run.performed += Run;
         _pInput.Player.Run.canceled += Run;
@@ -81,7 +94,7 @@ public class CharacterController : MonoBehaviour
 
     void Update()
     {
-        if (!_isDead)
+        if (!_isDead && IsOwner)
         {
             MovePlayer(_originalMoveSpeed);
         }
@@ -121,26 +134,27 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+
     void TakeWeapon(InputAction.CallbackContext context)
     {
         RaycastHit hit;
         Transform camera = GetComponentInChildren<CameraPlayer>().transform;
+        Debug.DrawRay(camera.transform.position, camera.transform.forward, Color.green, 1000);
         Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, Mathf.Infinity, _layerMask);
         if (hit.transform == null) return;
 
-        Weapon _weaponScript;
-        if (hit.transform.gameObject.TryGetComponent(out _weaponScript))
+        Weapon weaponScript;
+        if (hit.transform.gameObject.TryGetComponent(out weaponScript))
         {
             if(_equipedWeapon != null)
             {
                 _equipedWeapon.Drop();
             }
-            _weaponScript.TakeInHand();
-            _weaponScript._handSpot = GameObject.Find("HandSpot").transform;
-            hit.transform.SetParent(transform);
-            _equipedWeapon = _weaponScript;
+            weaponScript.TakeInHand(_handSpot, _camera.transform, transform, _playerId);
+            _equipedWeapon = weaponScript;
         }
     }
+
 
     void DropWeapon(InputAction.CallbackContext context)
     {
@@ -148,6 +162,7 @@ public class CharacterController : MonoBehaviour
         {
             _equipedWeapon.Drop();
         }
+        _equipedWeapon = null;
     }
 
     void Crouch(InputAction.CallbackContext context)
@@ -215,6 +230,13 @@ public class CharacterController : MonoBehaviour
             _heartMaterial.SetFloat("_HP", normalizedHP);
         }
     }
+    
+    public Transform GetCamera()
+    {
+        return _camera.transform;
+    }
+
+}
 
 
 }
