@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : NetworkBehaviour
 {
     [SerializeField] protected float _speed = 0.1f;
     [SerializeField] protected float _lifeTime = 10;

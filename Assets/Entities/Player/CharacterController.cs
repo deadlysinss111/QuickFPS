@@ -25,6 +25,7 @@ public class CharacterController : NetworkBehaviour
 
     [SerializeField] LayerMask _layerMask;
     [SerializeField] Camera _camera;
+    [SerializeField] Transform _handSpot;
 
     void Awake()
     {
@@ -36,12 +37,10 @@ public class CharacterController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("local : " + IsLocalPlayer);
-        Debug.Log("owner : " + IsOwner);
-        Debug.Log("id : " + OwnerClientId);
         if (!IsOwner)
         {
             _camera.gameObject.SetActive(false);
+            return;
         }
         _pInput.Enable();
         _pInput.Player.Run.performed += Run;
@@ -87,7 +86,6 @@ public class CharacterController : NetworkBehaviour
     {
         if (!_isDead && IsOwner)
         {
-            print("move");
             MovePlayer(_originalMoveSpeed);
         }
     }
@@ -121,26 +119,27 @@ public class CharacterController : NetworkBehaviour
         }
     }
 
+
     void TakeWeapon(InputAction.CallbackContext context)
     {
         RaycastHit hit;
         Transform camera = GetComponentInChildren<CameraPlayer>().transform;
+        Debug.DrawRay(camera.transform.position, camera.transform.forward, Color.green, 1000);
         Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, Mathf.Infinity, _layerMask);
         if (hit.transform == null) return;
 
-        Weapon _weaponScript;
-        if (hit.transform.gameObject.TryGetComponent(out _weaponScript))
+        Weapon weaponScript;
+        if (hit.transform.gameObject.TryGetComponent(out weaponScript))
         {
             if(_equipedWeapon != null)
             {
                 _equipedWeapon.Drop();
             }
-            _weaponScript.TakeInHand();
-            _weaponScript._handSpot = GameObject.Find("HandSpot").transform;
-            hit.transform.SetParent(transform);
-            _equipedWeapon = _weaponScript;
+            weaponScript.TakeInHand(_handSpot, _camera.transform, transform);
+            _equipedWeapon = weaponScript;
         }
     }
+
 
     void DropWeapon(InputAction.CallbackContext context)
     {

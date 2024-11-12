@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1435109570076447884}
   - component: {fileID: 608297787010586647}
   - component: {fileID: 6926531583098912498}
+  - component: {fileID: 967256021151557839}
   m_Layer: 0
   m_Name: BulletHitEffect
   m_TagString: Untagged
@@ -101,3 +102,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _decayAfter: 3
   _decayDuring: 2
+--- !u!114 &967256021151557839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4637669730398805543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
