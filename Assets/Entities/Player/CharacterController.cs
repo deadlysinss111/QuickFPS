@@ -26,6 +26,7 @@ public class CharacterController : MonoBehaviour
 
     void Awake()
     {
+        gameOverUI.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         _pInput = new QuickFPS();
         _equipedWeapon = null;
@@ -42,7 +43,6 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed += DropWeapon;
         _pInput.Player.Crouch.performed += Crouch;
         _pInput.Player.Crouch.canceled += Crouch;
-        //_pInput.Player.SelfDamage.performed += SelfDamage;
     }
 
     private void OnDisable()
@@ -54,7 +54,6 @@ public class CharacterController : MonoBehaviour
         _pInput.Player.DropWeapon.performed -= DropWeapon;
         _pInput.Player.Crouch.performed -= Crouch;
         _pInput.Player.Crouch.canceled -= Crouch;
-        //_pInput.Player.SelfDamage.performed -= SelfDamage;
         _pInput.Disable();
     }
 
@@ -156,7 +155,7 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
-    void SelfDamage(InputAction.CallbackContext context)
+    void SelfDamage()
     {
         TakeDamage(10);
     }
@@ -177,6 +176,9 @@ public class CharacterController : MonoBehaviour
             gameOverUI.SetActive(true);
         }
         Time.timeScale = 0f;
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void Retry()
@@ -187,7 +189,8 @@ public class CharacterController : MonoBehaviour
 
     public void Quit()
     {
-        Application.Quit();
+        Application.Quit(); // For builded version
+        UnityEditor.EditorApplication.isPlaying = false; // for edited version
     }
 
 }
