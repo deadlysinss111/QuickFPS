@@ -19,7 +19,7 @@ public class Bullet : NetworkBehaviour
         _lifeTime -= Time.deltaTime;
         if(_lifeTime <= 0)
         {
-            Destroy(gameObject);
+            DestroySelfRpc();
         }
     }
 
@@ -39,6 +39,12 @@ public class Bullet : NetworkBehaviour
             Hit(player);
         }
         
+        DestroySelfRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DestroySelfRpc()
+    {
         Destroy(gameObject);
     }
 }

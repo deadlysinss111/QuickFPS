@@ -39,6 +39,10 @@ public class Weapon : NetworkBehaviour
     [NonSerialized] public Transform _cameraToFollow;
     [NonSerialized] public Transform _playerTrasform;
 
+    private NetworkVariable<int> _ownerID = new(-1);
+    private NetworkVariable<Vector3> _framePosition = new();
+    private NetworkVariable<Quaternion> _frameRotation = new();
+
     virtual protected void Awake()
     {
         _pInput = new();
@@ -52,7 +56,7 @@ public class Weapon : NetworkBehaviour
     // --- Behaviour as Game Object --- //
     #region GameObjectBehaviour
 
-    virtual public void TakeInHand(Transform handSpot, Transform camera, Transform playerransform)
+    virtual public void TakeInHand(Transform handSpot, Transform camera, Transform playerransform, int playerId)
     {
         _pInput.Enable();
 
@@ -69,6 +73,7 @@ public class Weapon : NetworkBehaviour
         _handSpot = handSpot;
         _cameraToFollow = camera;
         _playerTrasform = playerransform;
+        SetOwnerIDRpc(playerId);
 
         _pInput.Player.Reload.performed += Reload;
         _state = State.Taken;
@@ -104,21 +109,44 @@ public class Weapon : NetworkBehaviour
         _handSpot = null;
         _cameraToFollow = null;
         _playerTrasform  = null;
+        SetOwnerIDRpc(-1);
 
 
         GameObject.Find("AmmoLeft").GetComponent<TextMeshProUGUI>().SetText("-");
         GameObject.Find("AmmoMax").GetComponent<TextMeshProUGUI>().SetText("-");
     }
 
+    [Rpc(SendTo.Server)]
+    private void SetOwnerIDRpc(int value)
+    {
+        _ownerID.Value = value;
+        
+    }
+
     virtual protected void Update()
     {
         if (_state != State.Grounded)
         {
-            transform.position = _handSpot.position;
             Vector3 eulerCamera = _cameraToFollow.rotation.eulerAngles;
             Vector3 eulerPlyer = _playerTrasform.rotation.eulerAngles;
-            transform.localRotation = Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0);
+            UpdateValuesRpc(_handSpot.position, Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0));
+            ApplyValuesRpc();
         }
+        
+    }
+
+    [Rpc(SendTo.Server)]
+    private void UpdateValuesRpc(Vector3 position, Quaternion Rotation)
+    {
+        _framePosition.Value = position;
+        _frameRotation.Value = Rotation;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void ApplyValuesRpc()
+    {
+        transform.position = _framePosition.Value;
+        transform.localRotation = _frameRotation.Value;
     }
     #endregion
 
@@ -171,11 +199,7 @@ public class Weapon : NetworkBehaviour
         if (_currentAmmo > 0)
         {
             Transform tip = transform.Find("CanonTip");
-            GameObject bullet = Instantiate(
-                _bulletPrefab,
-                tip.position,
-                _cameraToFollow.transform.rotation * Quaternion.Euler(0, -90, 0)
-                );
+            SpawnTravelBullettRpc(tip.position, _cameraToFollow.transform.rotation * Quaternion.Euler(0, -90, 0));
 
             //Bullet bulletScript = bullet.GetComponent<Bullet>();
             --CurrentAmmo;
@@ -185,6 +209,14 @@ public class Weapon : NetworkBehaviour
             Reload();
             GameObject.Find("AmmoLeft").GetComponent<TextMeshProUGUI>().SetText("-");
         }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SpawnTravelBullettRpc(Vector3 origin, Quaternion rotation)
+    {
+        
+        GameObject bullet = Instantiate(_bulletPrefab, origin, rotation);
+        bullet.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, true);
     }
 
 

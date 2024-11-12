@@ -15,6 +15,13 @@ public class GameManager : NetworkBehaviour
     {
         //NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += PlayerJoin;
         NetworkManager.Singleton.OnClientConnectedCallback += PlayerJoin;
+
+
+        // CODE TO COMMENT TO HAVE SERVER
+        //GameObject player = Instantiate(_playerPrefab);
+        //player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
+        //player.GetComponent<CharacterController>()._playerId = (int)_playerId.Value;
+        //++_playerId.Value;
     }
 
     private void PlayerJoin(ulong obj)
@@ -36,6 +43,7 @@ public class GameManager : NetworkBehaviour
         //player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
         //player.GetComponent<NetworkObject>().ChangeOwnership(id);
         player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
+        player.GetComponent<CharacterController>()._playerId = (int)_playerId.Value;
         ++_playerId.Value;
     }
 }

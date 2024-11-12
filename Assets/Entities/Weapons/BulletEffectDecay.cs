@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class BulletEffectDecay : MonoBehaviour
+public class BulletEffectDecay : NetworkBehaviour
 {
     [SerializeField] float _decayAfter = 3;
     [SerializeField] float _decayDuring = 2;
@@ -36,7 +37,7 @@ public class BulletEffectDecay : MonoBehaviour
         _decayDuring -= Time.deltaTime;
         if(_decayDuring <= 0)
         {
-            Destroy(gameObject);
+            DestroySelfRpc();
         }
         else
         {
@@ -45,5 +46,11 @@ public class BulletEffectDecay : MonoBehaviour
             col.a = _decayDuring / _decayTime;
             renderer.color = col;
         }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DestroySelfRpc()
+    {
+        Destroy(gameObject);
     }
 }

@@ -26,7 +26,7 @@ public class HitscanBullet : NetworkBehaviour
         //}
 
         HitEffect(point, normal);
-        //Destroy(gameObject);
+        DestroySelfRpc();
     }
 
     virtual protected void HitEffect(Vector3 point, Vector3 normal)
@@ -40,5 +40,11 @@ public class HitscanBullet : NetworkBehaviour
         GameObject hole = Instantiate(_hitEffect, point + Vector3.Normalize(normal) * 0.01f, Quaternion.LookRotation(normal));
         //hole.transform.SetParent(transform);
         hole.GetComponent<NetworkObject>().SpawnWithOwnership(0, true);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DestroySelfRpc()
+    {
+        Destroy(gameObject);
     }
 }

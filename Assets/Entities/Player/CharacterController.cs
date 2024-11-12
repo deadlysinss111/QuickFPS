@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
+using System;
 
 
 public class CharacterController : NetworkBehaviour
@@ -27,6 +28,8 @@ public class CharacterController : NetworkBehaviour
     [SerializeField] Camera _camera;
     [SerializeField] Transform _handSpot;
 
+    [NonSerialized] public int _playerId = -1;
+
     void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -40,6 +43,8 @@ public class CharacterController : NetworkBehaviour
         if (!IsOwner)
         {
             _camera.gameObject.SetActive(false);
+            transform.Find("CanvasCamera").gameObject.SetActive(false);
+            transform.Find("Canvas").gameObject.SetActive(false);
             return;
         }
         _pInput.Enable();
@@ -135,7 +140,7 @@ public class CharacterController : NetworkBehaviour
             {
                 _equipedWeapon.Drop();
             }
-            weaponScript.TakeInHand(_handSpot, _camera.transform, transform);
+            weaponScript.TakeInHand(_handSpot, _camera.transform, transform, _playerId);
             _equipedWeapon = weaponScript;
         }
     }
@@ -147,6 +152,7 @@ public class CharacterController : NetworkBehaviour
         {
             _equipedWeapon.Drop();
         }
+        _equipedWeapon = null;
     }
 
     void Crouch(InputAction.CallbackContext context)
