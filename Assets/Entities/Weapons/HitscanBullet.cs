@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HitscanBullet : MonoBehaviour
 {
-    [SerializeField] int _damage = 10;
+    [SerializeField] int _damage = 1;
     [SerializeField] int _dmgFalloff = 0;
     [SerializeField] GameObject _hitEffect;
 

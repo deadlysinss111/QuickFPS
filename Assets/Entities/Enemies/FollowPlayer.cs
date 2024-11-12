@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class FollowPlayer : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private GameObject _player;
+    [SerializeField]  float _health = 50f;
     [SerializeField] float _stopDistance = 8f;
     [SerializeField] float _shootDistance = 10f;
     [SerializeField] float _cooldown = 2f;
@@ -33,7 +35,9 @@ public class FollowPlayer : MonoBehaviour
 
         if (distanceToPlayer > _stopDistance)
         {
-            _agent.SetDestination(_player.transform.position);
+            Vector3 pos = _player.transform.position;
+            NavMesh.SamplePosition(pos, out NavMeshHit hit, 100, LayerMask.NameToLayer("All"));
+            _agent.SetDestination(hit.position);
         }
         else
         {
@@ -48,5 +52,21 @@ public class FollowPlayer : MonoBehaviour
             _weapon.Fire();
             _remaingingCooldown = _cooldown;
         }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        _health -= damage;
+
+        if (_health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Enemy died!");
+        Destroy(gameObject);
     }
 }

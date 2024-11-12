@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class DamageEffect : MonoBehaviour
 {
-    [SerializeField] float _damage = 10f;
     [SerializeField] Image _damageImage;
     [SerializeField] AudioClip _damageSound;
     [SerializeField] float _fadeDuration = 2f;
@@ -32,7 +31,6 @@ public class DamageEffect : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<CharacterController>().TakeDamage(_damage);
             ShowDamageEffect();
             //AudioSource.PlayClipAtPoint(_damageSound, other.transform.position);
             //PlayDamageSound();

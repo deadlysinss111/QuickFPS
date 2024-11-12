@@ -13,8 +13,9 @@ public class CharacterController : MonoBehaviour
     bool _isGrounded;
     Vector3 _originalScale;
 
-    public float _health = 100f;
-    public Image _damageImage;
+    [SerializeField]  float _health = 100f;
+    Image _damageImage;
+    [SerializeField]  private DamageEffect _damageEffect;
 
     private bool _isDead = false;
     [SerializeField] private GameObject gameOverUI;
@@ -155,15 +156,17 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
-    void SelfDamage()
-    {
-        TakeDamage(10);
-    }
+
     public void TakeDamage(float damage)
     {
         _health -= damage;
+        if (_damageEffect != null)
+        {
+            _damageEffect.ShowDamageEffect();
+        }
+
         if (_health <= 0)
-        { 
+        {
             _isDead = true;
             ShowGameOverScreen();
         }
