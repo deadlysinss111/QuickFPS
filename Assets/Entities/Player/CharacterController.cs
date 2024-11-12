@@ -34,14 +34,14 @@ public class CharacterController : NetworkBehaviour
         _originalScale = transform.localScale;
     }
 
-    private void OnEnable()
+    public override void OnNetworkSpawn()
     {
         Debug.Log("local : " + IsLocalPlayer);
         Debug.Log("owner : " + IsOwner);
         Debug.Log("id : " + OwnerClientId);
         if (!IsOwner)
         {
-            //_camera.gameObject.SetActive(false);
+            _camera.gameObject.SetActive(false);
         }
         _pInput.Enable();
         _pInput.Player.Run.performed += Run;

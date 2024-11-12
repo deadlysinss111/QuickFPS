@@ -20,7 +20,6 @@ public class GameManager : NetworkBehaviour
     private void PlayerJoin(ulong obj)
     {
         SpawnPlayerRpc(_playerId.Value);
-        IncrementIdRpc();
     }
 
     //private void PlayerJoin(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
@@ -36,13 +35,7 @@ public class GameManager : NetworkBehaviour
         GameObject player = Instantiate(_playerPrefab);
         //player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
         //player.GetComponent<NetworkObject>().ChangeOwnership(id);
-        player.GetComponent<NetworkObject>().SpawnWithOwnership(id, true);
-    }
-
-    [Rpc(SendTo.Server)]
-    private void IncrementIdRpc()
-    {
-        GameObject player = Instantiate(_playerPrefab);
+        player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
         ++_playerId.Value;
     }
 }
