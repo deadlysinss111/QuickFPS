@@ -1793,6 +1793,10 @@ PrefabInstance:
       propertyPath: _damageImage
       value: 
       objectReference: {fileID: 710455225}
+    - target: {fileID: 7370016118653340524, guid: 77e19f8f7c7f2e04ba489ad5c078ba03, type: 3}
+      propertyPath: _damageEffect
+      value: 
+      objectReference: {fileID: 710455227}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class CharacterController : MonoBehaviour
@@ -14,12 +15,15 @@ public class CharacterController : MonoBehaviour
     Vector3 _originalScale;
 
     [SerializeField]  float _health = 100f;
+    [SerializeField] float _maxHealth = 100f;
     Image _damageImage;
     [SerializeField]  private DamageEffect _damageEffect;
 
     private bool _isDead = false;
     [SerializeField] private GameObject gameOverUI;
 
+    [SerializeField] private GameObject _heart;
+    private Material _heartMaterial;
 
     Weapon _equipedWeapon;
 
@@ -27,6 +31,7 @@ public class CharacterController : MonoBehaviour
 
     void Awake()
     {
+
         gameOverUI.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         _pInput = new QuickFPS();
@@ -80,7 +85,12 @@ public class CharacterController : MonoBehaviour
         {
             MovePlayer(_originalMoveSpeed);
         }
+        if (_heart != null)
+        {
+            UpdateShader();
+        }
     }
+
     private void MovePlayer(float speed)
     {
 
@@ -162,6 +172,7 @@ public class CharacterController : MonoBehaviour
         _health -= damage;
         if (_damageEffect != null)
         {
+            _health = Mathf.Clamp(_health, 0, _maxHealth);
             _damageEffect.ShowDamageEffect();
         }
 
@@ -196,5 +207,14 @@ public class CharacterController : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false; // for edited version
     }
 
-}
+    private void UpdateShader()
+    {
+        if (_heartMaterial != null)
+        {
+            float normalizedHP = Mathf.Clamp01(_health / _maxHealth);
+            _heartMaterial.SetFloat("_HP", normalizedHP);
+        }
+    }
 
+
+}
