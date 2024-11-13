@@ -43,7 +43,7 @@ public class GameManager : NetworkBehaviour
         //player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
         //player.GetComponent<NetworkObject>().ChangeOwnership(id);
         player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
-        player.GetComponent<CharacterController>()._playerId = (int)_playerId.Value;
+        player.GetComponent<CharacterController>()._playerId.Value = (int)_playerId.Value;
         ++_playerId.Value;
     }
 }

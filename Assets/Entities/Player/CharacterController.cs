@@ -31,9 +31,9 @@ public class CharacterController : NetworkBehaviour
 
     [SerializeField] LayerMask _layerMask;
     [SerializeField] Camera _camera;
-    [SerializeField] Transform _handSpot;
+    [SerializeField] public Transform _handSpot;
 
-    [NonSerialized] public int _playerId = -1;
+    [NonSerialized] public NetworkVariable<int> _playerId = new(-1);
 
     void Awake()
     {
@@ -63,6 +63,7 @@ public class CharacterController : NetworkBehaviour
         _pInput.Player.Crouch.canceled += Crouch;
 
         transform.Find("Main Camera").GetComponent<AudioManager>().Init();
+        transform.Find("Canvas").SetParent(null);
     }
 
     private void OnDisable()
@@ -151,7 +152,7 @@ public class CharacterController : NetworkBehaviour
             {
                 _equipedWeapon.Drop();
             }
-            weaponScript.TakeInHand(_handSpot, _camera.transform, transform, _playerId);
+            weaponScript.TakeInHand(_handSpot, _camera.transform, transform, _playerId.Value);
             _equipedWeapon = weaponScript;
         }
     }

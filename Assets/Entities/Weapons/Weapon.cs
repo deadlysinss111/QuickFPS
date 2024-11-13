@@ -120,19 +120,36 @@ public class Weapon : NetworkBehaviour
     private void SetOwnerIDRpc(int value)
     {
         _ownerID.Value = value;
-        
+        print(value);
     }
 
     virtual protected void Update()
     {
         if (_state != State.Grounded)
         {
-            Vector3 eulerCamera = _cameraToFollow.rotation.eulerAngles;
-            Vector3 eulerPlyer = _playerTrasform.rotation.eulerAngles;
-            UpdateValuesRpc(_handSpot.position, Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0));
-            ApplyValuesRpc();
+            SearchForCarrierIDRpc();
+            //ApplyValuesRpc();
         }
         
+    }
+
+    [Rpc(SendTo.Server)]
+    void SearchForCarrierIDRpc()
+    {
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        foreach(var player in players)
+        {
+            CharacterController controller = player.GetComponent<CharacterController>();
+            int id = controller._playerId.Value;
+            if(id == _ownerID.Value)
+            {
+                Vector3 eulerCamera = player.transform.Find("Main Camera").transform.rotation.eulerAngles;
+                Vector3 eulerPlyer = player.transform.rotation.eulerAngles;
+                //UpdateValuesRpc(controller._handSpot.position, Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0));
+                transform.position = controller._handSpot.position;
+                transform.localRotation = Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0);
+            }
+        }
     }
 
     [Rpc(SendTo.Server)]
