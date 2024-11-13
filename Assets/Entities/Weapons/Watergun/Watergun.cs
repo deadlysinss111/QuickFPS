@@ -32,6 +32,7 @@ public class Watergun : Weapon
     protected override void TriggerFireTravel(InputAction.CallbackContext ctx)
     {
         _isShooting = !_isShooting;
+        GetComponent<Animator>().SetBool("Shooting", _isShooting);
     }
 
     protected override void Update()

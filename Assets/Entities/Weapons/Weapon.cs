@@ -106,6 +106,9 @@ public class Weapon : NetworkBehaviour
         GetComponent<Rigidbody>().useGravity = true;
         GetComponent<Rigidbody>().AddForce(Vector3.Normalize(_cameraToFollow.transform.forward)*500);
 
+        GetComponent<Animator>().SetBool("Reloading", false);
+        GetComponent<Animator>().SetBool("Shooting", false);
+
         _handSpot = null;
         _cameraToFollow = null;
         _playerTrasform  = null;
@@ -250,6 +253,7 @@ public class Weapon : NetworkBehaviour
         GameObject.Find("AmmoLeft").GetComponent<TextMeshProUGUI>().SetText("-");
         StartCoroutine(ReloadingCorouine());
         _state = State.Reloading;
+        GetComponent<Animator>().SetBool("Reloading", true);
     }
 
 
@@ -261,7 +265,8 @@ public class Weapon : NetworkBehaviour
         {
             _state = State.Taken;
             CurrentAmmo = _maxAmmo;
-            
+            GetComponent<Animator>().SetBool("Reloading", false);
+
         }
     }
 
