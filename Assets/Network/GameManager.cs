@@ -18,10 +18,10 @@ public class GameManager : NetworkBehaviour
 
 
         // CODE TO COMMENT TO HAVE SERVER
-        //GameObject player = Instantiate(_playerPrefab);
-        //player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
-        //player.GetComponent<CharacterController>()._playerId = (int)_playerId.Value;
-        //++_playerId.Value;
+        GameObject player = Instantiate(_playerPrefab);
+        player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
+        player.GetComponent<CharacterController>()._playerId.Value = (int)_playerId.Value;
+        ++_playerId.Value;
     }
 
     private void PlayerJoin(ulong obj)
