@@ -367,7 +367,7 @@ public partial class @QuickFPS: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c32dfbd6-fa7e-4176-9b01-0e5b4cc1cf65"",
-                    ""path"": ""<Keyboard>/ctrl"",
+                    ""path"": ""<Keyboard>/capsLock"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

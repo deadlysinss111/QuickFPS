@@ -11,16 +11,17 @@ using System.Collections;
 
 public class CharacterController : NetworkBehaviour
 {
+    private Animator _animator;
     QuickFPS _pInput;
     float _originalMoveSpeed = 5f;
     float _runMoveSpeed = 7f;
-    bool _isGrounded;
     Vector3 _originalScale;
 
     NetworkVariable<float> _health = new(100f);
     [SerializeField] float _maxHealth = 100f;
     Image _damageImage;
     [SerializeField]  private DamageEffect _damageEffect;
+    private bool _isGrounded;
 
     private bool _isDead = false;
     [SerializeField] private GameObject gameOverUI;
@@ -35,6 +36,7 @@ public class CharacterController : NetworkBehaviour
     [SerializeField] public Transform _handSpot;
 
     [NonSerialized] public NetworkVariable<int> _playerId = new(-1);
+
 
     void Awake()
     {
@@ -66,6 +68,7 @@ public class CharacterController : NetworkBehaviour
 
         transform.Find("Main Camera").GetComponent<AudioManager>().Init();
         transform.Find("Canvas").SetParent(null);
+        _animator = GetComponent<Animator>();
     }
 
     private void OnDisable()
@@ -80,17 +83,18 @@ public class CharacterController : NetworkBehaviour
         _pInput.Disable();
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (other.CompareTag("Ground"))
         {
             _isGrounded = true;
+            _animator.SetBool("isJumping", false);
         }
     }
 
-    void OnCollisionExit(Collision collision)
+    void OnTriggerExit(Collider other)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (other.CompareTag("Ground"))
         {
             _isGrounded = false;
         }
@@ -110,20 +114,31 @@ public class CharacterController : NetworkBehaviour
 
     private void MovePlayer(float speed)
     {
-
         Vector2 movementInput = _pInput.Player.Move.ReadValue<Vector2>();
         Vector3 moveDirection = transform.right * movementInput.x + transform.forward * movementInput.y;
         moveDirection.y = 0;
 
-        transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+        if (movementInput == Vector2.zero)
+        {
+            _animator.SetBool("isMoving", false);
+        }
+        else
+        {
+            _animator.SetBool("isMoving", true);
+            transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+        }
     }
 
     void Run(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
+        {
+            _animator.SetBool("isRunning", true);
             _originalMoveSpeed = _runMoveSpeed;
+        }
         else if (context.phase == InputActionPhase.Canceled)
         {
+            _animator.SetBool("isRunning", false);
             _runMoveSpeed = _originalMoveSpeed;
             _originalMoveSpeed = 5f;
         }
@@ -131,13 +146,17 @@ public class CharacterController : NetworkBehaviour
 
     void Jump(InputAction.CallbackContext context)
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null && _isGrounded)
+        _animator.SetBool("isJumping", true);
+        if (_isGrounded)
         {
-            rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+                _isGrounded = false;
+            }
         }
     }
-
 
     void TakeWeapon(InputAction.CallbackContext context)
     {
@@ -171,18 +190,17 @@ public class CharacterController : NetworkBehaviour
 
     void Crouch(InputAction.CallbackContext context)
     {
-        if (_isGrounded)
+        if (context.phase == InputActionPhase.Performed)
         {
-            if (context.phase == InputActionPhase.Performed)
-            {
-                Vector3 scale = transform.localScale;
-                scale.y = _originalScale.y * 0.5f;
-                transform.localScale = scale;
-            }
-            else if (context.phase == InputActionPhase.Canceled)
-            {
-                transform.localScale = _originalScale;
-            }
+            _animator.SetBool("IsCrouched", true);
+            //Vector3 scale = transform.localScale;
+            //scale.y = _originalScale.y * 0.5f;
+            //transform.localScale = scale;
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            _animator.SetBool("IsCrouched", false);
+            //transform.localScale = _originalScale;
         }
     }
 
