@@ -280,7 +280,8 @@ public class CharacterController : NetworkBehaviour
 
         if (_health.Value <= 0)
         {
-            _gameManager.IncrementScoreRpc(dmgFrom);
+            if(dmgFrom <= 100)
+                _gameManager.IncrementScoreRpc(dmgFrom);
             _isDead = true;
             //ShowGameOverScreen();
             if(_equipedWeapon != null)
