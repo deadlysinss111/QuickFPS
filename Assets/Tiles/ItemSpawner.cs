@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class ItemSpawner : NetworkBehaviour
 {
     [SerializeField] GameObject _prefab;
     [SerializeField] float _delay;
-    float _remainingDelay;
+    float _remainingDelay = 2;
     bool _isBusy = false;
 
     private void Update()

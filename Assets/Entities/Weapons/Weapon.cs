@@ -40,8 +40,6 @@ public class Weapon : NetworkBehaviour
     [NonSerialized] public Transform _playerTrasform;
 
     private NetworkVariable<int> _ownerID = new(-1);
-    private NetworkVariable<Vector3> _framePosition = new();
-    private NetworkVariable<Quaternion> _frameRotation = new();
 
     [NonSerialized] public ItemSpawner _spawnerRef;
 
@@ -85,6 +83,12 @@ public class Weapon : NetworkBehaviour
         GameObject.Find("AmmoLeft").GetComponent<TextMeshProUGUI>().SetText(_currentAmmo.ToString());
         GameObject.Find("AmmoMax").GetComponent<TextMeshProUGUI>().SetText(_maxAmmo.ToString());
 
+        
+    }
+
+    [Rpc(SendTo.Server)]
+    private void BorrowRpc()
+    {
         _spawnerRef.Borrow();
     }
 
@@ -134,43 +138,27 @@ public class Weapon : NetworkBehaviour
     {
         if (_state != State.Grounded)
         {
-            SearchForCarrierIDRpc();
-            //ApplyValuesRpc();
+            var players = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in players)
+            {
+                CharacterController controller = player.GetComponent<CharacterController>();
+                int id = controller._playerId.Value;
+                if (id == _ownerID.Value)
+                {
+                    Vector3 eulerCamera = player.transform.Find("Main Camera").transform.rotation.eulerAngles;
+                    Vector3 eulerPlyer = player.transform.rotation.eulerAngles;
+                    UpdateTransformRpc(controller._handSpot.position, Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0));
+                }
+            }
         }
         
     }
 
     [Rpc(SendTo.Server)]
-    void SearchForCarrierIDRpc()
+    private void UpdateTransformRpc(Vector3 position, Quaternion rotation)
     {
-        var players = GameObject.FindGameObjectsWithTag("Player");
-        foreach(var player in players)
-        {
-            CharacterController controller = player.GetComponent<CharacterController>();
-            int id = controller._playerId.Value;
-            if(id == _ownerID.Value)
-            {
-                Vector3 eulerCamera = player.transform.Find("Main Camera").transform.rotation.eulerAngles;
-                Vector3 eulerPlyer = player.transform.rotation.eulerAngles;
-                //UpdateValuesRpc(controller._handSpot.position, Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0));
-                transform.position = controller._handSpot.position;
-                transform.localRotation = Quaternion.Euler(eulerCamera.x, eulerPlyer.y, 0);
-            }
-        }
-    }
-
-    [Rpc(SendTo.Server)]
-    private void UpdateValuesRpc(Vector3 position, Quaternion Rotation)
-    {
-        _framePosition.Value = position;
-        _frameRotation.Value = Rotation;
-    }
-
-    [Rpc(SendTo.Server)]
-    private void ApplyValuesRpc()
-    {
-        transform.position = _framePosition.Value;
-        transform.localRotation = _frameRotation.Value;
+        transform.position = position;
+        transform.rotation = rotation;
     }
     #endregion
 
@@ -192,9 +180,8 @@ public class Weapon : NetworkBehaviour
             Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, Mathf.Infinity, LayerMask.NameToLayer("Everything") - LayerMask.NameToLayer("Bullets"));
             if (hit.transform != null)
             {
-                SpawnHitScanBullettRpc(hit.point, hit.normal);
-                
-                
+                SpawnHitScanBullettRpc(hit.point, hit.normal, (ulong)_ownerID.Value);
+                HitscanBehaviour(hit);
             }
             --CurrentAmmo;
         }
@@ -205,11 +192,27 @@ public class Weapon : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Server)]
-    private void SpawnHitScanBullettRpc(Vector3 point, Vector3 normal)
+    protected void HitscanBehaviour(RaycastHit hit)
     {
         GameObject bullet = Instantiate(_bulletPrefab);
-        bullet.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, true);
+        HitscanBullet bulletScript = bullet.GetComponent<HitscanBullet>();
+
+        if (hit.transform.gameObject.TryGetComponent(out FollowPlayer enemy))
+        {
+            bulletScript.Hit(enemy);
+        }
+        else if (hit.transform.gameObject.TryGetComponent(out CharacterController player))
+        {
+            print("hi(");
+            bulletScript.Hit(player);
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SpawnHitScanBullettRpc(Vector3 point, Vector3 normal, ulong id)
+    {
+        GameObject bullet = Instantiate(_bulletPrefab);
+        bullet.GetComponent<NetworkObject>().SpawnWithOwnership(id, true);
         bullet.GetComponent<HitscanBullet>().Trigger(point, normal);
     }
 
@@ -223,7 +226,7 @@ public class Weapon : NetworkBehaviour
         if (_currentAmmo > 0)
         {
             Transform tip = transform.Find("CanonTip");
-            SpawnTravelBullettRpc(tip.position, _cameraToFollow.transform.rotation * Quaternion.Euler(0, -90, 0));
+            SpawnTravelBullettRpc(tip.position, _cameraToFollow.transform.rotation * Quaternion.Euler(0, -90, 0), (ulong)_ownerID.Value);
 
             //Bullet bulletScript = bullet.GetComponent<Bullet>();
             --CurrentAmmo;
@@ -236,11 +239,11 @@ public class Weapon : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    private void SpawnTravelBullettRpc(Vector3 origin, Quaternion rotation)
+    private void SpawnTravelBullettRpc(Vector3 origin, Quaternion rotation, ulong id)
     {
         
         GameObject bullet = Instantiate(_bulletPrefab, origin, rotation);
-        bullet.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, true);
+        bullet.GetComponent<NetworkObject>().SpawnWithOwnership(id, true);
     }
 
 

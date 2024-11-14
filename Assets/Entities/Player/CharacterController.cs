@@ -7,6 +7,7 @@ using static UnityEngine.Rendering.DebugUI;
 using Unity.Netcode;
 using System;
 using System.Collections;
+using TMPro;
 
 
 public class CharacterController : NetworkBehaviour
@@ -35,7 +36,13 @@ public class CharacterController : NetworkBehaviour
     [SerializeField] Camera _camera;
     [SerializeField] public Transform _handSpot;
 
+    [SerializeField] public TextMeshProUGUI _timeInSeconds;
+    [SerializeField] public TextMeshProUGUI _timeInMinuts;
+    [SerializeField] public TextMeshProUGUI _score;
+
     [NonSerialized] public NetworkVariable<int> _playerId = new(-1);
+
+    private GameManager _gameManager;
 
 
     void Awake()
@@ -49,6 +56,9 @@ public class CharacterController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         gameOverUI.SetActive(false);
+        _animator = GetComponent<Animator>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         if (!IsOwner)
         {
             _camera.gameObject.SetActive(false);
@@ -68,7 +78,6 @@ public class CharacterController : NetworkBehaviour
 
         transform.Find("Main Camera").GetComponent<AudioManager>().Init();
         transform.Find("Canvas").SetParent(null);
-        _animator = GetComponent<Animator>();
     }
 
     private void OnDisable()
@@ -85,10 +94,12 @@ public class CharacterController : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if(!IsOwner) return;
+
         if (other.CompareTag("Ground"))
         {
             _isGrounded = true;
-            _animator.SetBool("isJumping", false);
+            SetAnimBoolRpc("isJumping", false);
         }
     }
 
@@ -102,7 +113,9 @@ public class CharacterController : NetworkBehaviour
 
     void Update()
     {
-        if (!_isDead && IsOwner)
+        if (!IsOwner) return;
+
+        if (!_isDead)
         {
             MovePlayer(_originalMoveSpeed);
         }
@@ -110,6 +123,31 @@ public class CharacterController : NetworkBehaviour
         {
             UpdateShader();
         }
+        SetTexts();
+    }
+
+    private void SetTexts()
+    {
+        float time = GameManager._timeLeft;
+        int seconds = (int)time % 60;
+        int minuts = (int)((time - seconds) / 60);
+        _timeInMinuts.SetText(minuts.ToString());
+        _timeInSeconds.SetText(seconds.ToString());
+
+        if(_playerId.Value == 0)
+        {
+            _score.SetText(_gameManager._player1score.Value.ToString());
+        }
+        else if(_playerId.Value == 1)
+        {
+            _score.SetText(_gameManager._player2score.Value.ToString());
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SetAnimBoolRpc(string name, bool value)
+    {
+        _animator.SetBool(name, value);
     }
 
     private void MovePlayer(float speed)
@@ -120,11 +158,11 @@ public class CharacterController : NetworkBehaviour
 
         if (movementInput == Vector2.zero)
         {
-            _animator.SetBool("isMoving", false);
+            SetAnimBoolRpc("isMoving", false);
         }
         else
         {
-            _animator.SetBool("isMoving", true);
+            SetAnimBoolRpc("isMoving", true);
             transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
         }
     }
@@ -133,12 +171,12 @@ public class CharacterController : NetworkBehaviour
     {
         if (context.phase == InputActionPhase.Performed)
         {
-            _animator.SetBool("isRunning", true);
+            SetAnimBoolRpc("isRunning", true);
             _originalMoveSpeed = _runMoveSpeed;
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _animator.SetBool("isRunning", false);
+            SetAnimBoolRpc("isRunning", false);
             _runMoveSpeed = _originalMoveSpeed;
             _originalMoveSpeed = 5f;
         }
@@ -146,7 +184,7 @@ public class CharacterController : NetworkBehaviour
 
     void Jump(InputAction.CallbackContext context)
     {
-        _animator.SetBool("isJumping", true);
+        SetAnimBoolRpc("isJumping", true);
         if (_isGrounded)
         {
             Rigidbody rb = GetComponent<Rigidbody>();
@@ -192,31 +230,35 @@ public class CharacterController : NetworkBehaviour
     {
         if (context.phase == InputActionPhase.Performed)
         {
-            _animator.SetBool("IsCrouched", true);
+            SetAnimBoolRpc("IsCrouched", true);
             //Vector3 scale = transform.localScale;
             //scale.y = _originalScale.y * 0.5f;
             //transform.localScale = scale;
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _animator.SetBool("IsCrouched", false);
+            SetAnimBoolRpc("IsCrouched", false);
             //transform.localScale = _originalScale;
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, ulong dmgFrom)
     {
 
         TakeDamageRpc(damage);
 
-        if (!IsOwner) return;
-
+        
+        //if (!IsOwner) return;
+        
         _damageEffect.ShowDamageEffect();
 
         if (_health.Value <= 0)
         {
+            _gameManager.IncrementScoreRpc(dmgFrom);
             _isDead = true;
             //ShowGameOverScreen();
+            if(_equipedWeapon != null)
+                _equipedWeapon.Drop();
             StartCoroutine(DeathCoroutine());
         }
     }
@@ -237,10 +279,6 @@ public class CharacterController : NetworkBehaviour
         {
             _health.Value = Mathf.Clamp(_health.Value, 0, _maxHealth);
         }
-
-        print(_health.Value);
-
-        
     }
 
     private void ShowGameOverScreen()

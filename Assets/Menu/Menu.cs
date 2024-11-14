@@ -9,6 +9,7 @@ public class Menu : MonoBehaviour
 {
     [SerializeField] Button _hostBtn;
     [SerializeField] Button _joinBtn;
+    [SerializeField] Button _soloBtn;
 
     private void Awake()
     {
@@ -19,6 +20,11 @@ public class Menu : MonoBehaviour
         });
         _joinBtn.onClick.AddListener(() => {
             NetworkConnectionHandler.GetInstance().StartClient();
+            //SceneLoader.Load(SceneLoader.Scene.FistLevel);
+        });
+        _soloBtn.onClick.AddListener(() => {
+            NetworkConnectionHandler.GetInstance().StartSolo();
+            SceneLoader.Load(SceneLoader.Scene.PlayGround);
             //SceneLoader.Load(SceneLoader.Scene.FistLevel);
         });
     }

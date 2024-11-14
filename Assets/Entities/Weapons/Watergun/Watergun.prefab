@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1043152741127782305}
   - component: {fileID: 8381922861518475344}
   - component: {fileID: 4575251568738216305}
+  - component: {fileID: 2682118100650076370}
   m_Layer: 0
   m_Name: Watergun
   m_TagString: Untagged
@@ -206,6 +207,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canon: {fileID: 9086624769492849157}
+--- !u!114 &2682118100650076370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526869499326681781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 8381922861518475344}
 --- !u!1 &5936871397124581442
 GameObject:
   m_ObjectHideFlags: 0

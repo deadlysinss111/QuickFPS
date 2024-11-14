@@ -12,6 +12,25 @@ public class GameManager : NetworkBehaviour
     [SerializeField] GameObject _playerPrefab;
     NetworkVariable<ulong> _playerId = new(0);
     GameObject[] _exceptList = new GameObject[100];
+    int _exceptListAmount = 0;
+
+    [SerializeField] GameObject _enemyPrefab;
+
+    [NonSerialized] public NetworkVariable<ulong> _player1score = new(0);
+    [NonSerialized] public NetworkVariable<ulong> _player2score = new(0);
+
+    [SerializeField] float _gameDuration = 300;
+    static public float _timeLeft = 0;
+
+    private void Update()
+    {
+        _timeLeft = _gameDuration - Time.time;
+
+        if(_timeLeft <= 0)
+        {
+            // TODO: Game Over
+        }
+    }
 
     private void Awake()
     {
@@ -19,11 +38,24 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += PlayerJoin;
 
 
-        // CODE TO COMMENT TO HAVE SERVER
-        //GameObject player = Instantiate(_playerPrefab);
-        //player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
-        //player.GetComponent<CharacterController>()._playerId.Value = (int)_playerId.Value;
-        //++_playerId.Value;
+        if(NetworkConnectionHandler._soloMode)
+        {
+            GameObject player = Instantiate(_playerPrefab);
+            player.GetComponent<NetworkObject>().SpawnWithOwnership(_playerId.Value, true);
+            player.GetComponent<CharacterController>()._playerId.Value = (int)_playerId.Value;
+            ++_playerId.Value;
+        }
+
+        StartCoroutine(DelayEnemySpawn());
+    }
+
+    private IEnumerator DelayEnemySpawn()
+    {
+        yield return new WaitForSeconds(4);
+        GameObject found = FindATile(_exceptList);
+
+        GameObject enemy = Instantiate(_enemyPrefab, found.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+        enemy.GetComponent<NetworkObject>().Spawn(true);
     }
 
     private void PlayerJoin(ulong obj)
@@ -68,6 +100,8 @@ public class GameManager : NetworkBehaviour
                     keepGoing = true;
                 }
             };
+            exceptList[_exceptListAmount] = found;
+            ++ _exceptListAmount;
 
         } while (keepGoing);
 
@@ -80,5 +114,20 @@ public class GameManager : NetworkBehaviour
         GameObject found = list[UnityEngine.Random.Range(0, list.Length)];
         player.transform.position = found.transform.position + new Vector3(0, 1, 0);
         player.GetComponent<CharacterController>().HealSelf();
+    }
+
+    [Rpc(SendTo.Server)]
+    public void IncrementScoreRpc(ulong id)
+    {
+        print(id + "score up");
+        if (id == 0)
+        {
+            ++_player1score.Value;
+        }
+        else if (id == 0)
+        {
+            ++_player2score.Value;
+        }
+        else Debug.LogWarning("This is abnormal, you tried to increment score of a player that doesn't exist");
     }
 }

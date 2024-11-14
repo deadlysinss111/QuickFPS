@@ -48,6 +48,8 @@ public class DamageEffect : NetworkBehaviour
     }
     public void ShowDamageEffect()
     {
+        if (!IsOwner) return;
+
         if (_damageImage != null) 
         { 
             if (fadeCoroutine != null) 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -13,12 +14,12 @@ public class Bullet : NetworkBehaviour
     protected virtual void Tick() { }
     protected virtual void Hit(FollowPlayer enemy) {
         Hit((MonoBehaviour)enemy);
-        enemy.GetComponent<FollowPlayer>().TakeDamage(_damage);
+        enemy.GetComponent<FollowPlayer>().TakeDamage(_damage, OwnerClientId);
     }
     protected virtual void Hit(CharacterController player)
     {
         Hit((MonoBehaviour)player);
-        player.TakeDamage(_damage);
+        player.TakeDamage(_damage, OwnerClientId);
 
         DamageEffect damageEffect = player.GetComponentInChildren<DamageEffect>();
         if (damageEffect != null)

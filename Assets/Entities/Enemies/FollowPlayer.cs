@@ -53,12 +53,13 @@ public class FollowPlayer : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, ulong dmgFrom)
     {
         _health -= damage;
 
         if (_health <= 0)
         {
+            GameObject.Find("GameManager").GetComponent<GameManager>().IncrementScoreRpc(dmgFrom);
             Die();
         }
     }

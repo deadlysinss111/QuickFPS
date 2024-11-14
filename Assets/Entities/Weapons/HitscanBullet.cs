@@ -9,6 +9,25 @@ public class HitscanBullet : NetworkBehaviour
     [SerializeField] int _dmgFalloff = 0;
     [SerializeField] GameObject _hitEffect;
 
+    public virtual void Hit(FollowPlayer enemy)
+    {
+        Hit((MonoBehaviour)enemy);
+        enemy.GetComponent<FollowPlayer>().TakeDamage(_damage, OwnerClientId);
+    }
+    public virtual void Hit(CharacterController player)
+    {
+        Hit((MonoBehaviour)player);
+        player.TakeDamage(_damage, OwnerClientId);
+
+        DamageEffect damageEffect = player.GetComponentInChildren<DamageEffect>();
+        if (damageEffect != null)
+        {
+            damageEffect.ShowDamageEffect();
+            // damageEffect.PlayDamageSound();
+        }
+    }
+    public virtual void Hit(MonoBehaviour target) { }
+
     public void Trigger(Vector3 point, Vector3 normal)
     {
         //if (hit.transform.TryGetComponent(out Weapon _))

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class NetworkConnectionHandler : NetworkBehaviour
 {
+    static public bool _soloMode = false;
+
     public static NetworkConnectionHandler GetInstance()
     {
         return GameObject.Find("ConnectionHandler").GetComponent<NetworkConnectionHandler>();
@@ -19,6 +21,13 @@ public class NetworkConnectionHandler : NetworkBehaviour
     public void StartHost()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_NetworkApprovalCallback;
+        NetworkManager.Singleton.StartHost();
+    }
+
+    public void StartSolo()
+    {
+        _soloMode = true;
+        NetworkManager.NetworkConfig.ConnectionApproval = false;
         NetworkManager.Singleton.StartHost();
     }
 
