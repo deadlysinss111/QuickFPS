@@ -6,13 +6,16 @@ public class FollowPlayer : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private GameObject _player;
-    [SerializeField] private float _health = 50f;
+    [SerializeField] private float _maxHealth = 50f;
+    private float _health;
     [SerializeField] private float _stopDistance = 8f;
     [SerializeField] private float _shootDistance = 10f;
     [SerializeField] private float _cooldown = 2f;
     [SerializeField] private float _randomMoveInterval = 10f;
     [SerializeField] private float _pauseDuration = 1f; // Durée de pause entre les mouvements
     private float _remainingCooldown;
+
+    bool _isDead = false;
 
     [SerializeField] private EnemyClassicWeapon _weapon;
     private Vector3 _randomDestination;
@@ -21,6 +24,7 @@ public class FollowPlayer : MonoBehaviour
 
     void Start()
     {
+        _health = _maxHealth;
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.FindWithTag("Player");
 
@@ -126,16 +130,29 @@ public class FollowPlayer : MonoBehaviour
     {
         _health -= damage;
 
-        if (_health <= 0)
+        if (_health <= 0 && _isDead == false)
         {
-            GameObject.Find("GameManager").GetComponent<GameManager>().IncrementScoreRpc(dmgFrom);
-            Die();
+            Die(dmgFrom);
         }
     }
 
-    private void Die()
+    private void Die(ulong from)
     {
-        Debug.Log("Enemy died!");
-        Destroy(gameObject);
+        _isDead = true;
+        GameObject.Find("GameManager").GetComponent<GameManager>().IncrementScoreRpc(from);
+        StartCoroutine(DeathCoroutine());
+    }
+
+    private IEnumerator DeathCoroutine()
+    {
+        transform.position = new Vector3(500, 500, 500);
+        yield return new WaitForSeconds(4);
+        _isDead = false;
+        GameObject.Find("GameManager").GetComponent<GameManager>().RespawnEnemy(gameObject);
+    }
+
+    public void Heal()
+    {
+        _health = _maxHealth;
     }
 }

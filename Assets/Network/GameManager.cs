@@ -22,6 +22,8 @@ public class GameManager : NetworkBehaviour
     [SerializeField] float _gameDuration = 300;
     static public float _timeLeft = 0;
 
+    [SerializeField] ulong _enemyCount = 2;
+
     private void Update()
     {
         _timeLeft = _gameDuration - Time.time;
@@ -52,10 +54,14 @@ public class GameManager : NetworkBehaviour
     private IEnumerator DelayEnemySpawn()
     {
         yield return new WaitForSeconds(4);
-        GameObject found = FindATile(_exceptList);
 
-        GameObject enemy = Instantiate(_enemyPrefab, found.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
-        enemy.GetComponent<NetworkObject>().Spawn(true);
+        for(ulong i=0;  i < _enemyCount; i++)
+        {
+            GameObject found = FindATile(_exceptList);
+
+            GameObject enemy = Instantiate(_enemyPrefab, found.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+            enemy.GetComponent<NetworkObject>().Spawn(true);
+        }
     }
 
     private void PlayerJoin(ulong obj)
@@ -115,6 +121,14 @@ public class GameManager : NetworkBehaviour
         player.transform.position = found.transform.position + new Vector3(0, 1, 0);
         player.GetComponent<CharacterController>().HealSelf();
     }
+    public void RespawnEnemy(GameObject enemy)
+    {
+        GameObject[] list = GameObject.FindGameObjectsWithTag("SpawnTile");
+        GameObject found = list[UnityEngine.Random.Range(0, list.Length)];
+        enemy.transform.position = found.transform.position + new Vector3(0, 1, 0);
+        enemy.GetComponent<FollowPlayer>().Heal();
+    }
+
 
     [Rpc(SendTo.Server)]
     public void IncrementScoreRpc(ulong id)
