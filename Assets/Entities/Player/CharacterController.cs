@@ -23,6 +23,12 @@ public class CharacterController : NetworkBehaviour
     [SerializeField]  private DamageEffect _damageEffect;
     private bool _isGrounded;
 
+    private BoxCollider _boxCollider;
+    private Vector3 _originalSize;
+    private Vector3 _originalCenter;
+    private Vector3 _crouchSize = new Vector3(1, 2f, 1);
+    private Vector3 _crouchCenterOffset = new Vector3(0, -1f, 0);
+
     private bool _isDead = false;
     [SerializeField] private GameObject gameOverUI;
 
@@ -44,7 +50,14 @@ public class CharacterController : NetworkBehaviour
         _pInput = new QuickFPS();
         _equipedWeapon = null;
         _originalScale = transform.localScale;
+        _boxCollider = GetComponent<BoxCollider>();
+        if (_boxCollider != null)
+        {
+            _originalSize = _boxCollider.size;
+            _originalCenter = _boxCollider.center;
+        }
     }
+
 
     public override void OnNetworkSpawn()
     {
@@ -116,18 +129,28 @@ public class CharacterController : NetworkBehaviour
     {
         Vector2 movementInput = _pInput.Player.Move.ReadValue<Vector2>();
         Vector3 moveDirection = transform.right * movementInput.x + transform.forward * movementInput.y;
-        moveDirection.y = 0;
 
-        if (movementInput == Vector2.zero)
+        if (movementInput != Vector2.zero)
         {
-            _animator.SetBool("isMoving", false);
+            _animator.SetBool("isMoving", true);
+
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, 1.2f, _layerMask))
+            {
+                Vector3 slopeDirection = Vector3.ProjectOnPlane(moveDirection, hit.normal);
+                transform.Translate(slopeDirection * speed * Time.deltaTime, Space.World);
+            }
+            else
+            {
+                transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+            }
         }
         else
         {
-            _animator.SetBool("isMoving", true);
-            transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+            _animator.SetBool("isMoving", false);
         }
     }
+
 
     void Run(InputAction.CallbackContext context)
     {
@@ -190,19 +213,22 @@ public class CharacterController : NetworkBehaviour
 
     void Crouch(InputAction.CallbackContext context)
     {
+        if (_boxCollider == null) return;
+
         if (context.phase == InputActionPhase.Performed)
         {
             _animator.SetBool("IsCrouched", true);
-            //Vector3 scale = transform.localScale;
-            //scale.y = _originalScale.y * 0.5f;
-            //transform.localScale = scale;
+            _boxCollider.size = _crouchSize;
+            _boxCollider.center = _originalCenter + _crouchCenterOffset;
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
             _animator.SetBool("IsCrouched", false);
-            //transform.localScale = _originalScale;
+            _boxCollider.size = _originalSize;
+            _boxCollider.center = _originalCenter;
         }
     }
+
 
     public void TakeDamage(float damage)
     {
