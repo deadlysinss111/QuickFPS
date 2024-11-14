@@ -72,10 +72,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health: 50
-  _stopDistance: 10
-  _shootDistance: 1
+  _stopDistance: 5
+  _shootDistance: 5
   _cooldown: 2
   _randomMoveInterval: 5
+  _pauseDuration: 2
   _weapon: {fileID: 0}
 --- !u!65 &5787350202938351376
 BoxCollider:

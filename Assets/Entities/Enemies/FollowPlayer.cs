@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class FollowPlayer : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class FollowPlayer : MonoBehaviour
     [SerializeField] private float _stopDistance = 8f;
     [SerializeField] private float _shootDistance = 10f;
     [SerializeField] private float _cooldown = 2f;
-    [SerializeField] private float _randomMoveInterval = 10f;
-    [SerializeField] private float _pauseDuration = 1f; // Durée de pause entre les mouvements
+    [SerializeField] private float _randomMoveInterval = 2f;
+    [SerializeField] private float _pauseDuration = 1f;
     private float _remainingCooldown;
 
     [SerializeField] private EnemyClassicWeapon _weapon;
@@ -24,17 +25,7 @@ public class FollowPlayer : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.FindWithTag("Player");
 
-        if (_agent == null)
-        {
-            Debug.LogError("NavMeshAgent not found on the enemy.");
-        }
 
-        if (_player == null)
-        {
-            Debug.LogError("Player not found. Ensure the player object has the tag 'Player'.");
-        }
-
-        // S'assurer que l'agent commence sur le NavMesh
         NavMeshHit hit;
         if (NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas))
         {
@@ -46,7 +37,6 @@ public class FollowPlayer : MonoBehaviour
             Debug.LogError("Enemy could not be placed on NavMesh.");
         }
 
-        // Démarrer le premier déplacement aléatoire
         StartCoroutine(MoveAndPause());
     }
 
@@ -80,13 +70,10 @@ public class FollowPlayer : MonoBehaviour
 
         _remainingCooldown -= Time.deltaTime;
 
-        if (_isMoving)
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
+        if (distanceToPlayer <= _stopDistance)
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
-            if (distanceToPlayer <= _stopDistance)
-            {
-                FollowPlayerAndShoot(distanceToPlayer);
-            }
+            FollowPlayerAndShoot(distanceToPlayer);
         }
     }
 
@@ -114,21 +101,24 @@ public class FollowPlayer : MonoBehaviour
 
     void FollowPlayerAndShoot(float distanceToPlayer)
     {
-        if (distanceToPlayer <= _shootDistance && _remainingCooldown <= 0)
+        if (distanceToPlayer <= _stopDistance)
         {
-            _weapon.Fire();
-            Debug.Log("Shooting at player.");
-            _remainingCooldown = _cooldown;
+            _agent.SetDestination(_player.transform.position);
+            if (distanceToPlayer <= _shootDistance && _remainingCooldown <= 0)
+            {
+                _weapon.Fire();
+                Debug.Log("Shooting at player.");
+                _remainingCooldown = _cooldown;
+            }
         }
     }
 
-    public void TakeDamage(float damage, ulong dmgFrom)
+    public void TakeDamage(float damage, ulong dameFrom)
     {
         _health -= damage;
 
         if (_health <= 0)
         {
-            GameObject.Find("GameManager").GetComponent<GameManager>().IncrementScoreRpc(dmgFrom);
             Die();
         }
     }
