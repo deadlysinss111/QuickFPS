@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class FollowPlayer : MonoBehaviour
 {
+    private Animator _animation;
     private NavMeshAgent _agent;
     private GameObject _player;
     [SerializeField] private float _maxHealth = 50f;
@@ -28,6 +29,7 @@ public class FollowPlayer : MonoBehaviour
         _health = _maxHealth;
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.FindWithTag("Player");
+        _animation = GetComponent<Animator>();
 
 
         NavMeshHit hit;
@@ -50,10 +52,12 @@ public class FollowPlayer : MonoBehaviour
         {
             if (_isMoving)
             {
+                _animation.SetBool("isMoving", true);
                 RandomMove();
                 yield return new WaitForSeconds(_randomMoveInterval);
                 _isMoving = false;
                 _agent.ResetPath();
+                _animation.SetBool("isMoving", false);
                 yield return new WaitForSeconds(_pauseDuration);
                 _isMoving = true;
             }
@@ -107,9 +111,11 @@ public class FollowPlayer : MonoBehaviour
     {
         if (distanceToPlayer <= _stopDistance)
         {
+            _animation.SetBool("isMoving", true);
             _agent.SetDestination(_player.transform.position);
             if (distanceToPlayer <= _shootDistance && _remainingCooldown <= 0)
             {
+                _animation.SetBool("isMoving", false);
                 _weapon.Fire();
                 Debug.Log("Shooting at player.");
                 _remainingCooldown = _cooldown;

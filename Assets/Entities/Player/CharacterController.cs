@@ -284,8 +284,8 @@ public class CharacterController : NetworkBehaviour
                 _gameManager.IncrementScoreRpc(dmgFrom);
             _isDead = true;
             //ShowGameOverScreen();
-            if(_equipedWeapon != null)
-                _equipedWeapon.Drop();
+            //if(_equipedWeapon != null)
+            //    _equipedWeapon.Drop();
             StartCoroutine(DeathCoroutine());
         }
     }
