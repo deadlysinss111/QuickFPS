@@ -43,8 +43,23 @@ public class VoxelLoader : MonoBehaviour
         GameObject found = null;
         switch (vox.colorIndex)
         {
-            case 246:
-                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\VoxelLoading\\Cube.prefab");
+            case 248:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\Tile.prefab");
+                break;
+            case 144:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\Slope.prefab");
+                break;
+            case 217:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\SpawnTile.prefab");
+                break;
+            case 240:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\WeaponTileWatergun.prefab");
+                break;
+            case 255:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\WeaponTileRevolver.prefab");
+                break;
+            case 152:
+                found = AssetDatabase.LoadAssetAtPath<GameObject>("Assets\\Tiles\\MedkitTile.prefab");
                 break;
         }
         return found;

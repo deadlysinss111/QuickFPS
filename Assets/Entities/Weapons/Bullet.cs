@@ -44,16 +44,17 @@ public class Bullet : NetworkBehaviour
     {
         if (collision.gameObject.TryGetComponent(out Weapon _) || collision.gameObject.layer == LayerMask.NameToLayer("Bullets"))
         {
-            print("hit");
             return;
         }
-        else if (collision.gameObject.TryGetComponent(out FollowPlayer enemy))
+
+        if (collision.gameObject.TryGetComponent(out FollowPlayer enemy))
         {
             Hit(enemy);
         }
         else if (collision.gameObject.TryGetComponent(out CharacterController player))
         {
             Hit(player);
+            
         }
         
         DestroySelfRpc();

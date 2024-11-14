@@ -10,7 +10,7 @@ public class SceneLoader
     {
         MainMenu,
         LoadingScene,
-        FistLevel,
+        PlayGround,
     }
 
     private static Scene _targetScene;

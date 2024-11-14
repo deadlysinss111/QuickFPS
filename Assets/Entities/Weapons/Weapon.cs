@@ -43,6 +43,8 @@ public class Weapon : NetworkBehaviour
     private NetworkVariable<Vector3> _framePosition = new();
     private NetworkVariable<Quaternion> _frameRotation = new();
 
+    [NonSerialized] public ItemSpawner _spawnerRef;
+
     virtual protected void Awake()
     {
         _pInput = new();
@@ -82,6 +84,8 @@ public class Weapon : NetworkBehaviour
 
         GameObject.Find("AmmoLeft").GetComponent<TextMeshProUGUI>().SetText(_currentAmmo.ToString());
         GameObject.Find("AmmoMax").GetComponent<TextMeshProUGUI>().SetText(_maxAmmo.ToString());
+
+        _spawnerRef.Borrow();
     }
 
     virtual public void Drop()

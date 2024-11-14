@@ -14,7 +14,7 @@ public class Menu : MonoBehaviour
     {
         _hostBtn.onClick.AddListener(() => {
             NetworkConnectionHandler.GetInstance().StartHost();
-            SceneLoader.Load(SceneLoader.Scene.FistLevel);
+            SceneLoader.Load(SceneLoader.Scene.PlayGround);
             
         });
         _joinBtn.onClick.AddListener(() => {

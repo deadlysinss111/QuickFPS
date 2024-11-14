@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using static UnityEngine.Rendering.DebugUI;
 using Unity.Netcode;
 using System;
+using System.Collections;
 
 
 public class CharacterController : NetworkBehaviour
@@ -16,7 +17,7 @@ public class CharacterController : NetworkBehaviour
     bool _isGrounded;
     Vector3 _originalScale;
 
-    [SerializeField]  float _health = 100f;
+    NetworkVariable<float> _health = new(100f);
     [SerializeField] float _maxHealth = 100f;
     Image _damageImage;
     [SerializeField]  private DamageEffect _damageEffect;
@@ -25,7 +26,7 @@ public class CharacterController : NetworkBehaviour
     [SerializeField] private GameObject gameOverUI;
 
     [SerializeField] private GameObject _heart;
-    private Material _heartMaterial;
+    [SerializeField] private Material _heartMaterial;
 
     Weapon _equipedWeapon;
 
@@ -53,6 +54,7 @@ public class CharacterController : NetworkBehaviour
             transform.Find("Canvas").gameObject.SetActive(false);
             return;
         }
+
         _pInput.Enable();
         _pInput.Player.Run.performed += Run;
         _pInput.Player.Run.canceled += Run;
@@ -186,18 +188,41 @@ public class CharacterController : NetworkBehaviour
 
     public void TakeDamage(float damage)
     {
-        _health -= damage;
-        if (_damageEffect != null)
-        {
-            _health = Mathf.Clamp(_health, 0, _maxHealth);
-            _damageEffect.ShowDamageEffect();
-        }
 
-        if (_health <= 0)
+        TakeDamageRpc(damage);
+
+        if (!IsOwner) return;
+
+        _damageEffect.ShowDamageEffect();
+
+        if (_health.Value <= 0)
         {
             _isDead = true;
-            ShowGameOverScreen();
+            //ShowGameOverScreen();
+            StartCoroutine(DeathCoroutine());
         }
+    }
+
+    private IEnumerator DeathCoroutine()
+    {
+        transform.position = new Vector3(500, 500, 500);
+        yield return new WaitForSeconds(4);
+        GameObject.Find("GameManager").GetComponent<GameManager>().RespawnPlayer(gameObject);
+        _isDead = false;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void TakeDamageRpc(float damage)
+    {
+        _health.Value -= damage;
+        if (_damageEffect != null)
+        {
+            _health.Value = Mathf.Clamp(_health.Value, 0, _maxHealth);
+        }
+
+        print(_health.Value);
+
+        
     }
 
     private void ShowGameOverScreen()
@@ -226,9 +251,9 @@ public class CharacterController : NetworkBehaviour
 
     private void UpdateShader()
     {
-        if (_heartMaterial != null)
+        if (_heartMaterial != null && IsOwner)
         {
-            float normalizedHP = Mathf.Clamp01(_health / _maxHealth);
+            float normalizedHP = Mathf.Clamp01(_health.Value / _maxHealth);
             _heartMaterial.SetFloat("_HP", normalizedHP);
         }
     }
@@ -236,6 +261,17 @@ public class CharacterController : NetworkBehaviour
     public Transform GetCamera()
     {
         return _camera.transform;
+    }
+
+    public void HealSelf()
+    {
+        HealRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void HealRpc()
+    {
+        _health.Value = _maxHealth;
     }
 
 }

@@ -875,11 +875,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e4a4a0531f6f154a955759acad84efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
   _maxHealth: 100
   _damageEffect: {fileID: 4566381977461272372}
   gameOverUI: {fileID: 1643310193537288450}
   _heart: {fileID: 6192677014345190855}
+  _heartMaterial: {fileID: 2100000, guid: 8ef9f1265cd2cfc4792befa3374be51b, type: 2}
   _layerMask:
     serializedVersion: 2
     m_Bits: 4294967295
