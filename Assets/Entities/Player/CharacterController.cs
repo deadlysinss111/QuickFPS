@@ -268,7 +268,7 @@ public class CharacterController : NetworkBehaviour
     }
 
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, ulong dmgFrom)
     {
 
         TakeDamageRpc(damage);
